@@ -5,9 +5,9 @@ const db = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password:'',
-  database: 'Distribuidora',
+  database: 'distribuidora',
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 10, //maximo de conectados a bd
   queueLimit: 0,
  
 });
