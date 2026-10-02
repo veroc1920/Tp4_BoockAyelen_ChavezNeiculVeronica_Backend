@@ -8,7 +8,6 @@
     "start:dev": "nodemon ./src/index.mjs",
     "start:watch": "node --watch ./src/index.mjs",
     "start": "node ./src/index.mjs"
-    
   },
   "keywords": [],
   "author": "",
