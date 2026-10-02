@@ -6,12 +6,14 @@ import clientesRoutes from './routes/clientesRoutes.mjs';
 import productosRoutes from './routes/productosRoutes.mjs';
 import empleadosRoutes from "./routes/empleadosRoutes.mjs";
 
+
 const app = express();
 app.use(express.json());
-app.use('/proveedores',proveedoresRoutes)
-app.use('/clientes',clientesRoutes)
-app.use('/productos',productosRoutes)
-app.use('/empleados',empleadosRoutes)
+app.use('/api/proveedores',proveedoresRoutes)
+app.use('/api/clientes',clientesRoutes)
+app.use('/api/productos',productosRoutes)
+app.use('/api/empleados',empleadosRoutes)
+
 //app.get('/', (req, res) => res.json({ ok: true, data: 'API Distribuidora funcionando' }));
 
 
