@@ -1,5 +1,4 @@
-//require('dotenv').config();
-//const express = require('express');
+
 import express from "express";
 import proveedoresRoutes from './routes/proveedoresRoutes.mjs';
 import clientesRoutes from './routes/clientesRoutes.mjs';
