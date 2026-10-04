@@ -133,16 +133,16 @@ async ingresar(req,res){
 
         // Si no afectó filas, es porque el registro no existía en la base de datos
         if (resultado.affectedRows === 0) {
-            return res.status(404).json({ error: "Registro no encontrado para eliminar" });
+            return res.status(404).json({ error: "Categoria no encontrada para eliminar" });
         }
 
-        res.status(200).json({ mensaje: "Registro eliminado con éxito" });
+        res.status(200).json({ mensaje: "Categoria eliminada con éxito" });
 
     } catch (err) {
         //  si el registro está siendo usado en otra tabla (llave foránea)
         if (err.code === 'ER_ROW_IS_REFERENCED_2' || err.code === 'ER_ROW_IS_REFERENCED') {
             return res.status(400).json({ 
-                error: "No se puede eliminar este registro porque tiene información asociada en otras tablas (ej. pedidos o productos)" 
+                error: "No se puede eliminar esta categoria porque tiene información asociada en otras tablas (ej. pedidos o productos)" 
             });
         }
         res.status(500).json({ error: err.message });

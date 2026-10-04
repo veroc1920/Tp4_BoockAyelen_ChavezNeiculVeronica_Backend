@@ -137,10 +137,10 @@ class ProveedoresController {
 
         // Si no afectó filas, es porque el registro no existía en la base de datos
         if (resultado.affectedRows === 0) {
-            return res.status(404).json({ error: "Registro no encontrado para eliminar" });
+            return res.status(404).json({ error: "Proveedor no encontrado para eliminar" });
         }
 
-        res.status(200).json({ mensaje: "Registro eliminado con éxito" });
+        res.status(200).json({ mensaje: "Proveedor eliminado con éxito" });
 
     } catch (err) {
         // si el registro está siendo usado en otra tabla (llave foránea)

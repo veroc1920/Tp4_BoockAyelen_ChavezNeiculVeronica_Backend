@@ -123,8 +123,31 @@ class ClientesController {
         }
    
     }
-    eliminar(req,res){
-    res.json({msg: ' Eliminar a un  Cliente'})
+    async eliminar(req, res) {
+        try {
+            const { id } = req.params;
+            
+            const [resultado] = await db.query(
+                `DELETE FROM clientes WHERE id_cliente = ?`,
+                [id]
+            );
+    
+            // Si no afectó filas, es porque el registro no existía en la base de datos
+            if (resultado.affectedRows === 0) {
+                return res.status(404).json({ error: "Cliente no encontrado para eliminar" });
+            }
+    
+            res.status(200).json({ mensaje: "Cliente eliminado con éxito" });
+    
+        } catch (err) {
+            //  si el registro está siendo usado en otra tabla (llave foránea)
+            if (err.code === 'ER_ROW_IS_REFERENCED_2' || err.code === 'ER_ROW_IS_REFERENCED') {
+                return res.status(400).json({ 
+                    error: "No se puede eliminar este registro porque tiene información asociada en otras tablas (ej. pedidos o productos)" 
+                });
+            }
+            res.status(500).json({ error: err.message });
+        }
     }
 }
 export default new ClientesController();
