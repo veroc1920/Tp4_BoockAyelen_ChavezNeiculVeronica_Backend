@@ -1,19 +1,16 @@
 //require('dotenv').config();
 //const express = require('express');
 import express from "express";
-import proveedoresRoutes from './routes/proveedoresRoutes.mjs';
-import clientesRoutes from './routes/clientesRoutes.mjs';
-import productosRoutes from './routes/productosRoutes.mjs';
-import empleadosRoutes from "./routes/empleadosRoutes.mjs";
+import router from "./src/routes/main.mjs";
+import rutaNoEncontrada from "./src/middlewares/rutaNoEncontrada.mjs";
+import manejoErrores from "./src/middlewares/manejoErrores.mjs";
 
 
 const app = express();
 app.use(express.json());
-app.use('/api/proveedores',proveedoresRoutes)
-app.use('/api/clientes',clientesRoutes)
-app.use('/api/productos',productosRoutes)
-app.use('/api/empleados',empleadosRoutes)
-
+app.use(router);
+app.use(rutaNoEncontrada);
+app.use(manejoErrores);
 //app.get('/', (req, res) => res.json({ ok: true, data: 'API Distribuidora funcionando' }));
 
 
