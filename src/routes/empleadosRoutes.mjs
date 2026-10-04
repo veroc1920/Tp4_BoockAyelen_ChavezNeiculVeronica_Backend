@@ -16,7 +16,7 @@ router.route('/:id')
  .get(empleadosControllers.consultarDetalle)
 
 //Método PATCH
- .patch(empleadosControllers.actualizarCampos )
+ .patch(empleadosControllers.actualizarParcial )
 
 //Método DELETE
  .delete(empleadosControllers.eliminar)

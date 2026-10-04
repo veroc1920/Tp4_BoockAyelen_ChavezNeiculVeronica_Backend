@@ -5,6 +5,8 @@ import proveedoresRoutes from './routes/proveedoresRoutes.mjs';
 import clientesRoutes from './routes/clientesRoutes.mjs';
 import productosRoutes from './routes/productosRoutes.mjs';
 import empleadosRoutes from "./routes/empleadosRoutes.mjs";
+import pedidosRoutes from "./routes/pedidosRoutes.mjs";
+import categoriasRoutes from "./routes/categoriasRoutes.mjs";
 
 
 const app = express();
@@ -13,12 +15,11 @@ app.use('/api/proveedores',proveedoresRoutes)
 app.use('/api/clientes',clientesRoutes)
 app.use('/api/productos',productosRoutes)
 app.use('/api/empleados',empleadosRoutes)
+app.use('/api/pedidos',pedidosRoutes)
+app.use('/api/categorias',categoriasRoutes)
 
 //app.get('/', (req, res) => res.json({ ok: true, data: 'API Distribuidora funcionando' }));
 
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
-//app.listen(3000, () =>{
-  //  console.log('Servidor activo')
-//})

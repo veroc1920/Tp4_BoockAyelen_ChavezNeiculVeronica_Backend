@@ -1,36 +1,36 @@
 import db from "../database/conexion.mjs";
 
-class ProveedoresController {
+class CategoriasController {
     constructor (){}
     async consultar(req,res) {
         try{
-            const[filas]=await db.query(`SELECT * FROM proveedores`);
+            const[filas]=await db.query(`SELECT* FROM categorias`);
             res.status(200).json({
                 total: filas.length,
-                proveedores:filas
+                categorias:filas
             });
         }catch (err){
             res.status(500).json({error:err.message});
         }
    
     }
-    async ingresar(req,res){
+async ingresar(req,res){
         try{
-            const {razon_social,nombre_contacto,telefono, email,direccion,condicion_iva} = req.body;
-            if ( !razon_social || !nombre_contacto || !telefono || ! email || !direccion || !condicion_iva ){
+            const {nombre} = req.body;
+            if ( !nombre){
                 return res.status(400).json({error: 'Faltan Campos Obligatorios'});
                 }
             const [resultado]= await db.query(
-                `INSERT INTO productos (razon_social,nombre_contacto,telefono, email,direccion,condicion_iva) VALUES(?,?,?,?,?,?)`,
-                [razon_social,nombre_contacto,telefono, email,direccion,condicion_iva]
+                `INSERT INTO categorias (nombre) VALUES(?)`,
+                [nombre]
             );
             res.status(201).json({
-                mensaje:'Proveedor creado con éxito',
+                mensaje:'La categoria ha sido creada con éxito',
                 id:resultado.insertId  //mandar el ID
             });
             } catch(err){
                 if(err.code === `ER_DUP_ENTRY`){
-                    return res.status(400).json({error:'El Proveedor ya se encuentra registrado'});
+                    return res.status(400).json({error:'La categoria ya se encuentra registrado'});
                     }
                     res.status(500).json({error: err.message});
                     }
@@ -40,44 +40,14 @@ class ProveedoresController {
     async consultarDetalle(req,res) {
         try{
             const{id}=req.params;
-            const[filas]=await db.query (`SELECT * FROM proveedores WHERE id= ?`, [id]);
+            const[filas]=await db.query (`SELECT * FROM categoria WHERE id= ?`, [id]);
             if(filas.length === 0){
-                return res.status(404).json({error: "Proveedor no encontrado"});
+                return res.status(404).json({error: "Categoria no encontrado"});
             }
             res.status(200).json(filas[0]);
         }catch(err){
             res.status(500).json({error: err.message});
         }
-    }
-    async actualizar(req, res) {
-    try {
-        const { id } = req.params;
-        const { razon_social, nombre_contacto, telefono, email, direccion, condicion_iva } = req.body;
-
-        if (!razon_social || !nombre_contacto || !telefono || !email || !direccion || !condicion_iva) {
-            return res.status(400).json({ error: "Faltan campos obligatorios" });
-        }
-
-        
-        const [resultado] = await db.query(
-            `UPDATE proveedores SET razon_social = ?, nombre_contacto = ?, telefono = ?, email = ?, direccion = ?, condicion_iva = ? WHERE id = ?`,
-            [razon_social, nombre_contacto, telefono, email, direccion, condicion_iva, id]
-        );
-
-        if (resultado.affectedRows === 0) {
-            return res.status(404).json({ error: "Proveedor no encontrado" });
-        }
-
-        const [filas] = await db.query(`SELECT * FROM proveedores WHERE id = ?`, [id]);
-        
-        res.status(200).json({
-            mensaje: "Proveedor actualizado con éxito",
-            proveedor: filas[0]
-        });
-        
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
     }
     async actualizarParcial(req,res){
         try{
@@ -102,36 +72,62 @@ class ProveedoresController {
             //Agregar el id al final del array de valores para la clausula  WHERE
             values.push(id);
 
-            //UPDATE proveedores SET nombre=?
+            //UPDATE categorias SET nombre=?
 
             const [resultado] = await db.query(
-                `UPDATE proveedores SET ${setClause} WHERE id_proveedor= ?`,
+                `UPDATE categorias SET ${setClause} WHERE id= ?`,
                 values
             );
             if(resultado.affectedRows === 0){
-                return res.status(404).json({error: "Proveedor no encontrado"});
+                return res.status(404).json({error: "Categoria no encontrada"});
             }
-            const [filas] = await db.query(`SELECT * FROM proveedores WHERE id_proveedor=?`,[id]);
+            const [filas] = await db.query(`SELECT * FROM categorias WHERE id=?`,[id]);
             res.status(200).json({
-                mensaje: "Proveedor actualizado parcialmente con éxito",
-                proveedor: filas[0]
+                mensaje: "Categoria actualizada parcialmente con éxito",
+                categoria: filas[0]
             });
 
         }catch(err){
             if (err.code === `ER_DUP_ENTRY`){
-                return res.status(400).json({error: "El proveedor ya se encuentra registrado"});
+                return res.status(400).json({error: "La categoria ya se encuentra registrada"});
             }
             res.status(500).json({error:err.message});
         }
    
     }
 
+    async actualizar(req,res){
+        try{
+            const {id} = req.params;
+            const {nombre}= req.body;
+
+            if(!nombre){
+                return res.status(400).json({error: "Faltan campos obligatorios"});
+            }
+            const [resultado]= await db.query(
+                `UPDATE categorias SET nombre=? WHERE id= ?`,
+                [nombre,id]
+            );
+            if (resultado.affectedRows === 0){
+                return res.status(404).json({error: "Categoria no encontrada"});
+            }
+                const [filas] = await db.query (`SELECT  * FROM categorias WHERE id=?`, [id]);
+                res.status(200).json({
+                    mensaje: "Categoria actualizada con éxito",
+                    categoria: filas[0]
+                });
+            }catch (err){
+                res.status(500).json({error: err.message});
+            }
+        }
+    
     async eliminar(req, res) {
     try {
         const { id } = req.params;
 
+        
         const [resultado] = await db.query(
-            `DELETE FROM proveedores WHERE id_proveedor = ?`,
+            `DELETE FROM categorias WHERE id = ?`,
             [id]
         );
 
@@ -143,7 +139,7 @@ class ProveedoresController {
         res.status(200).json({ mensaje: "Registro eliminado con éxito" });
 
     } catch (err) {
-        // si el registro está siendo usado en otra tabla (llave foránea)
+        //  si el registro está siendo usado en otra tabla (llave foránea)
         if (err.code === 'ER_ROW_IS_REFERENCED_2' || err.code === 'ER_ROW_IS_REFERENCED') {
             return res.status(400).json({ 
                 error: "No se puede eliminar este registro porque tiene información asociada en otras tablas (ej. pedidos o productos)" 
@@ -151,7 +147,7 @@ class ProveedoresController {
         }
         res.status(500).json({ error: err.message });
     }
- }
+}
 
 }
-export default new ProveedoresController();
+export default new CategoriasController();

@@ -1,12 +1,12 @@
 import db from "../database/conexion.mjs";
-class EmpleadosController {
+class PedidosController {
     constructor (){}
     async consultar(req,res) {
         try{
-            const[filas]=await db.query(`SELECT* FROM empleados`);
+            const[filas]=await db.query(`SELECT* FROM pedidos`);
             res.status(200).json({
                 total: filas.length,
-                empleados:filas
+                pedidos:filas
             });
         }catch (err){
             res.status(500).json({error:err.message});
@@ -16,21 +16,21 @@ class EmpleadosController {
 
     async ingresar(req,res){
         try{
-            const {nombre,apellido,fecha_de_nac,fecha_de_ingreso,dni,cuil,email,puesto} = req.body;
-            if ( !nombre||!apellido || !fecha_de_nac || !fecha_de_ingreso || !dni || !cuil || !email || !puesto ){
+            const {id_cliente, id_empleado, id_compania, total, estado} = req.body;
+            if ( !id_cliente|| !id_empleado|| !id_compania || !total|| !estado){
                 return res.status(400).json({error: 'Faltan Campos Obligatorios'});
                 }
             const [resultado]= await db.query(
-                `INSERT INTO empleados (nombre,apellido,fecha_de_nac,fecha_de_ingreso,dni,cuil,email,puesto) VALUES(?,?,?,?,?,?,?,?)`,
-                [nombre,apellido,fecha_de_nac,fecha_de_ingreso,dni,cuil,email,puesto]
+                `INSERT INTO pedidos (id_cliente, id_empleado, id_compania, total, estado) VALUES(?,?,?,?,?)`,
+                [id_cliente, id_empleado, id_compania, total, estado]
             );
             res.status(201).json({
-                mensaje:'Empleado creado con éxito',
+                mensaje:'Pedido creado con éxito',
                 id:resultado.insertId  //mandar el ID
             });
             } catch(err){
                 if(err.code === `ER_DUP_ENTRY`){
-                    return res.status(400).json({error:'El Empleado ya está cargado'});
+                    return res.status(400).json({error:'El pedido ya se encuentra registrado'});
                     }
                     res.status(500).json({error: err.message});
                     }
@@ -38,9 +38,9 @@ class EmpleadosController {
     async consultarDetalle(req,res) {
         try{
             const{id}=req.params;
-            const[filas]=await db.query (`SELECT * FROM empleados WHERE id= ?`, [id]);
+            const[filas]=await db.query (`SELECT * FROM pedidos WHERE id= ?`, [id]);
             if(filas.length === 0){
-                return res.status(404).json({error: "Empleado no encontrado"});
+                return res.status(404).json({error: "Pedidos no encontrado"});
             }
             res.status(200).json(filas[0]);
         }catch(err){
@@ -50,27 +50,27 @@ class EmpleadosController {
     async actualizar(req, res) {
     try {
         const { id } = req.params;
-        const { nombre, apellido, fecha_de_nac, fecha_de_ingreso, dni, cuil, email, puesto } = req.body;
+        const {id_cliente, id_empleado, id_compania, total, estado } = req.body;
 
         
-        if (!nombre || !apellido || !fecha_de_nac || !fecha_de_ingreso || !dni || !cuil || !puesto) {
+        if (!id_cliente||  !id_empleado|| !id_compania|| !total|| !estado) {
             return res.status(400).json({ error: "Faltan campos obligatorios" });
         }
 
         const [resultado] = await db.query(
-            `UPDATE empleados SET nombre=?, apellido=?, fecha_de_nac=?, fecha_de_ingreso=?, dni=?, cuil=?, email=?, puesto=? WHERE id_empleado = ?`,
-            [nombre, apellido, fecha_de_nac, fecha_de_ingreso, dni, cuil, email, puesto, id]
+            `UPDATE pedidos SET id_cliente=?, id_empleado=?, id_compania=?, total=?, estado=? WHERE id_pedido = ?`,
+            [id_cliente, id_empleado, id_compania, total, estado, id]
         );
 
         if (resultado.affectedRows === 0) {
-            return res.status(404).json({ error: "Empleado no encontrado" });
+            return res.status(404).json({ error: "Pedido no encontrado" });
         }
 
-        const [filas] = await db.query(`SELECT * FROM empleados WHERE id_empleado = ?`, [id]);
+        const [filas] = await db.query(`SELECT * FROM pedidos WHERE id_pedido = ?`, [id]);
         
         res.status(200).json({
-            mensaje: "Empleado actualizado con éxito",
-            empleado: filas[0] 
+            mensaje: "Pedido actualizado con éxito",
+            pedido: filas[0] 
         });
         
     } catch (err) {
@@ -100,35 +100,33 @@ async actualizarParcial(req, res) {
         values.push(id);
 
         const [resultado] = await db.query(
-            `UPDATE empleados SET ${setClause} WHERE id_empleado = ?`,
+            `UPDATE pedidos SET ${setClause} WHERE id_pedido = ?`,
             values
         );
         
         if (resultado.affectedRows === 0) {
-            return res.status(404).json({ error: "Empleado no encontrado" });
+            return res.status(404).json({ error: "Pedido no encontrado" });
         }
         
-        const [filas] = await db.query(`SELECT * FROM empleados WHERE id_empleado = ?`, [id]);
+        const [filas] = await db.query(`SELECT * FROM pedidos WHERE id_pedido = ?`, [id]);
         res.status(200).json({
-            mensaje: "Empleado actualizado parcialmente con éxito",
-            empleado: filas[0]
+            mensaje: "Pedido actualizado parcialmente con éxito",
+            pedido: filas[0]
         });
 
-    } catch (err) {
+    }catch(err){
         if (err.code === 'ER_DUP_ENTRY') {
-            return res.status(400).json({ error: "El empleado ya se encuentra registrado" });
+            return res.status(400).json({ error: "El pedido ya se encuentra registrado" });
         }
         res.status(500).json({ error: err.message });
+    }    
     }
-    }
-
     async eliminar(req, res) {
     try {
         const { id } = req.params;
-
-       
+        
         const [resultado] = await db.query(
-            `DELETE FROM empleados WHERE id_empleado = ?`,
+            `DELETE FROM pedidos WHERE id_pedido = ?`,
             [id]
         );
 
@@ -140,7 +138,7 @@ async actualizarParcial(req, res) {
         res.status(200).json({ mensaje: "Registro eliminado con éxito" });
 
     } catch (err) {
-        // si el registro está siendo usado en otra tabla (llave foránea)
+        //  si el registro está siendo usado en otra tabla (llave foránea)
         if (err.code === 'ER_ROW_IS_REFERENCED_2' || err.code === 'ER_ROW_IS_REFERENCED') {
             return res.status(400).json({ 
                 error: "No se puede eliminar este registro porque tiene información asociada en otras tablas (ej. pedidos o productos)" 
@@ -151,4 +149,4 @@ async actualizarParcial(req, res) {
 }
 
 }
-export default new EmpleadosController();
+export default new PedidosController();
