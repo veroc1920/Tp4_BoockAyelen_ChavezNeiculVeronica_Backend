@@ -1,0 +1,2 @@
+Creé un main en routes para manejar todas las rutas y evitar repetir código en el index.
+Están los middlewares ahora, hay que eliminar los try catch de los controllers, los errores los maneja ahora desde los middleware

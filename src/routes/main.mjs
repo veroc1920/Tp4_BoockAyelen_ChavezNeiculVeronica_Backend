@@ -1,3 +1,5 @@
+//Router central, importa todos los routers y los exporta para index.mjs
+
 import {Router} from "express";
 import clientesRoutes from "./clientesRoutes.mjs"
 import empleadosRoutes from "./empleadosRoutes.mjs"
