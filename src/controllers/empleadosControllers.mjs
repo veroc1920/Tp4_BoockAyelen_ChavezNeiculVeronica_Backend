@@ -38,7 +38,7 @@ class EmpleadosController {
     async consultarDetalle(req,res) {
         try{
             const{id}=req.params;
-            const[filas]=await db.query (`SELECT * FROM empleados WHERE id= ?`, [id]);
+            const[filas]=await db.query (`SELECT * FROM empleados WHERE id_empleado= ?`, [id]);
             if(filas.length === 0){
                 return res.status(404).json({error: "Empleado no encontrado"});
             }

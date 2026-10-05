@@ -39,7 +39,7 @@ class ProductosController {
     async consultarDetalle(req,res) {
         try{
             const{id}=req.params;
-            const[filas]=await db.query (`SELECT * FROM productos WHERE id= ?`, [id]);
+            const[filas]=await db.query (`SELECT * FROM productos WHERE id_producto= ?`, [id]);
             if(filas.length === 0){
                 return res.status(404).json({error: "Producto no encontrado"});
             }
