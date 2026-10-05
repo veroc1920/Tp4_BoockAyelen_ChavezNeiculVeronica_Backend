@@ -14,15 +14,15 @@ class CategoriasController {
         }
    
     }
-async ingresar(req,res){
+    async ingresar(req,res){
         try{
-            const {nombre} = req.body;
-            if ( !nombre){
+            const {nombre,descripcion} = req.body;
+            if ( !nombre|| !descripcion){
                 return res.status(400).json({error: 'Faltan Campos Obligatorios'});
                 }
             const [resultado]= await db.query(
-                `INSERT INTO categorias (nombre) VALUES(?)`,
-                [nombre]
+                `INSERT INTO categorias (nombre,descripcion) VALUES(?,?)`,
+                [nombre,descripcion]
             );
             res.status(201).json({
                 mensaje:'La categoria ha sido creada con éxito',
@@ -40,7 +40,7 @@ async ingresar(req,res){
     async consultarDetalle(req,res) {
         try{
             const{id}=req.params;
-            const[filas]=await db.query (`SELECT * FROM categoria WHERE id_categoria= ?`, [id]);
+            const[filas]=await db.query (`SELECT * FROM categorias WHERE id_categoria= ?`, [id]);
             if(filas.length === 0){
                 return res.status(404).json({error: "Categoria no encontrado"});
             }
