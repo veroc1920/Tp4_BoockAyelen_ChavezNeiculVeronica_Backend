@@ -21,7 +21,7 @@ class ProveedoresController {
                 return res.status(400).json({error: 'Faltan Campos Obligatorios'});
                 }
             const [resultado]= await db.query(
-                `INSERT INTO productos (razon_social,nombre_contacto,telefono, email,direccion,condicion_iva) VALUES(?,?,?,?,?,?)`,
+                `INSERT INTO proveedores (razon_social,nombre_contacto,telefono, email,direccion,condicion_iva) VALUES(?,?,?,?,?,?)`,
                 [razon_social,nombre_contacto,telefono, email,direccion,condicion_iva]
             );
             res.status(201).json({
@@ -60,7 +60,7 @@ class ProveedoresController {
 
         
         const [resultado] = await db.query(
-            `UPDATE proveedores SET razon_social = ?, nombre_contacto = ?, telefono = ?, email = ?, direccion = ?, condicion_iva = ? WHERE id = ?`,
+            `UPDATE proveedores SET razon_social = ?, nombre_contacto = ?, telefono = ?, email = ?, direccion = ?, condicion_iva = ? WHERE id_proveedor = ?`,
             [razon_social, nombre_contacto, telefono, email, direccion, condicion_iva, id]
         );
 
@@ -68,7 +68,7 @@ class ProveedoresController {
             return res.status(404).json({ error: "Proveedor no encontrado" });
         }
 
-        const [filas] = await db.query(`SELECT * FROM proveedores WHERE id = ?`, [id]);
+        const [filas] = await db.query(`SELECT * FROM proveedores WHERE id_proveedor = ?`, [id]);
         
         res.status(200).json({
             mensaje: "Proveedor actualizado con éxito",

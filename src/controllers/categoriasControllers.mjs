@@ -75,13 +75,13 @@ class CategoriasController {
             //UPDATE categorias SET nombre=?
 
             const [resultado] = await db.query(
-                `UPDATE categorias SET ${setClause} WHERE id= ?`,
+                `UPDATE categorias SET ${setClause} WHERE id_categoria= ?`,
                 values
             );
             if(resultado.affectedRows === 0){
                 return res.status(404).json({error: "Categoria no encontrada"});
             }
-            const [filas] = await db.query(`SELECT * FROM categorias WHERE id=?`,[id]);
+            const [filas] = await db.query(`SELECT * FROM categorias WHERE id_categoria=?`,[id]);
             res.status(200).json({
                 mensaje: "Categoria actualizada parcialmente con éxito",
                 categoria: filas[0]
@@ -99,19 +99,19 @@ class CategoriasController {
     async actualizar(req,res){
         try{
             const {id} = req.params;
-            const {nombre}= req.body;
+            const {nombre,descripcion}= req.body;
 
-            if(!nombre){
+            if(!nombre||!descripcion){
                 return res.status(400).json({error: "Faltan campos obligatorios"});
             }
             const [resultado]= await db.query(
-                `UPDATE categorias SET nombre=? WHERE id= ?`,
-                [nombre,id]
+                `UPDATE categorias SET nombre=?,descripcion=? WHERE id_categoria= ?`,
+                [nombre,descripcion,id]
             );
             if (resultado.affectedRows === 0){
                 return res.status(404).json({error: "Categoria no encontrada"});
             }
-                const [filas] = await db.query (`SELECT  * FROM categorias WHERE id=?`, [id]);
+                const [filas] = await db.query (`SELECT  * FROM categorias WHERE id_categoria=?`, [id]);
                 res.status(200).json({
                     mensaje: "Categoria actualizada con éxito",
                     categoria: filas[0]
@@ -127,7 +127,7 @@ class CategoriasController {
 
         
         const [resultado] = await db.query(
-            `DELETE FROM categorias WHERE id = ?`,
+            `DELETE FROM categorias WHERE id_categoria = ?`,
             [id]
         );
 
