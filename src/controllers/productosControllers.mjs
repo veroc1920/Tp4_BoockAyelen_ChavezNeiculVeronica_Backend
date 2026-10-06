@@ -1,11 +1,11 @@
-import db from "../database/conexion.mjs";
+import productosModel from '../models/productosModels.mjs';
 
 class ProductosController {
     constructor () { }
-//Creamos los métodos para reemplazar las funciones en Routes
+
 //GET
     async consultar(req, res) {
-        const [filas] = await db.query('SELECT * FROM productos');
+        const [filas] = await productosModel.obtenerTodos();
 
             res.status(200).json({
                 total: filas.length,
@@ -15,16 +15,13 @@ class ProductosController {
     }
 //POST
     async ingresar(req, res) {
-        const { id_proveedor,nombre_producto, descripcion, precio  } = req.body;
+        const { id_categoria, id_proveedor, nombre_producto, descripcion, precio, stock  } = req.body;
 
-            if (!id_proveedor || !nombre_producto || !descripcion || !precio) {
+            if (!id_categoria || !id_proveedor || !nombre_producto || !descripcion || precio === undefined) {
                 return res.status(400).json({error: 'faltan campos obligatorios'});
             }
             
-            const [resultado] = await db.query( 
-                `INSERT INTO productos (id_proveedor, nombre_producto, descripcion, precio ) VALUES (?, ?, ?, ?)`,
-                [id_proveedor, nombre_producto, descripcion, precio ]
-            );
+            const [resultado] = await productosModel.crear({ id_categoria, id_proveedor, nombre_producto, descripcion, precio, stock });
 
             res.status (201).json({
                 mensaje: 'Producto creado con éxito',
@@ -38,8 +35,7 @@ class ProductosController {
     async consultarDetalle(req, res) {
         const { id } = req.params;
 
-        const [filas] = await db.query('SELECT * FROM productos WHERE id = ?', [id]);
-
+        const [filas] = await productosModel.obtenerPorId(id);
         if (filas.length === 0) {
                 return res.status(404).json({ error: 'Producto no encontrado' });
             }
@@ -50,22 +46,19 @@ class ProductosController {
 //PUT
     async actualizar(req, res) {
         const { id } = req.params;
-        const { id_proveedor, nombre_producto, descripcion, precio } = req.body;
+        const { id_categoria, id_proveedor, nombre_producto, descripcion, precio, stock } = req.body;
 
-        if (!id_proveedor || !nombre_producto || !descripcion || !precio) {
+        if (!id_categoria || !id_proveedor || !nombre_producto || !descripcion || precio === undefined || stock === undefined) {
                 return res.status(400).json({error: 'faltan campos obligatorios'});
             }
 
-            const [resultado] = await db.query(
-                `UPDATE productos SET id_proveedor = ?, nombre_producto = ?, descripcion = ?, precio = ? WHERE id = ?`,
-                [id_proveedor, nombre_producto, descripcion, precio, id]
-            );
+            const [resultado] = await productosModel.actualizar(id, { id_categoria, id_proveedor, nombre_producto, descripcion, precio, stock });
 
             if (resultado.affectedRows === 0) {
                 return res.status(404).json({ error: 'Producto no encontrado' });
             }
 
-            const [filas] = await db.query('SELECT * FROM productos WHERE id = ?', [id]);
+            const [filas] = await productosModel.obtenerPorId(id);
 
             res.status(200).json({
                 mensaje: 'Producto actualizado con éxito',
@@ -74,38 +67,23 @@ class ProductosController {
            
     }
 //PATCH
-    async actualizarCampos(req, res) {
+    async actualizarParcial(req, res) {
         const { id } = req.params;
         const campos = req.body;
         
-
-        //Obtener las claves y valores enviados en el body
-        const keys = Object.keys(campos);
-        
-        if (keys.length === 0) {
-            return res.status(400).json({ error: 'No se proporcionaron campos para actualizar' });
-        }
-
-        //Construimos la consulta SQL dinámicamente
-        const setClause = keys.map(key => `${key} = ?`).join(', ');
-        
-        const values = keys.map(key => campos[key]);
-        
-
-        values.push(id); // Agregamos el id al final de los valores del array para la cláusula WHERE
+        if (!campos || Object.keys(campos).length === 0) {
+                return res.status(400).json({ error: 'No se proporcionaron campos para actualizar' });
+            }
 
         //`UPDATE 
-        const [resultado] = await db.query(
-            `UPDATE productos SET ${setClause} WHERE id = ?`, 
-            values
-            );
+        const [resultado] = await productosModel.actualizarParcial(id, campos);
 
         if (resultado.affectedRows === 0) {
             return res.status(404).json({ error: 'Producto no encontrado' });
         }
 
-        const [filas] = await db.query('SELECT * FROM productos WHERE id = ?', [id]);
-           
+        const [filas] = await productosModel.obtenerPorId(id);
+
             res.status(200).json({
                 mensaje: 'Producto actualizado con éxito',
                 producto: filas[0]
@@ -115,9 +93,7 @@ class ProductosController {
     async eliminar(req, res) {
         const { id } = req.params;
 
-        const [resultado] = await db.query(
-            'DELETE FROM productos WHERE id = ?', 
-            [id]);
+        const [resultado] = await productosModel.eliminar(id);
 
         if (resultado.affectedRows === 0) {
             return res.status(404).json({ error: 'Producto no encontrado' });

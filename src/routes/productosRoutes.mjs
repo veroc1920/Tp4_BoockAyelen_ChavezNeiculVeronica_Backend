@@ -16,7 +16,7 @@ router.route('/:id')
  .get(productosControllers.consultarDetalle)
 
 //Método PATCH
- .patch(productosControllers.actualizarCampos )
+ .patch(productosControllers.actualizarParcial)
 
 //Método DELETE
  .delete(productosControllers.eliminar)

@@ -17,7 +17,7 @@ router.route('/:id')
  .get(clientesControllers.consultarDetalle)
 
 //Método PATCH
- .patch(clientesControllers.actualizarCampos )
+ .patch(clientesControllers.actualizarParcial)
 
 //Método DELETE
  .delete(clientesControllers.eliminar)

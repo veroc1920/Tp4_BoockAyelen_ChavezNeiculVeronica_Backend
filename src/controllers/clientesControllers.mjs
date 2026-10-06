@@ -1,10 +1,11 @@
-import db from "../database/conexion.mjs";
+import ClientesModel from '../models/clientesModels.mjs'
+
 class ClientesController {
     constructor (){}
 
     //GET
     async consultar(req, res) {
-        const [filas] = await db.query('SELECT * FROM clientes');
+        const [filas] = await ClientesModel.obtenerTodos();
 
         res.status(200).json({
             total: filas.length,
@@ -19,10 +20,7 @@ class ClientesController {
         if ( !nombre|| !apellido || !cuit || !razon_social || !direccion || !telefono || !email || !dni || !condicion_iva){
             return res.status(400).json({error: 'Faltan Campos Obligatorios'});
         }
-        const [resultado]= await db.query(
-            `INSERT INTO clientes (nombre, apellido, cuit, razon_social, direccion, telefono, email, dni, condicion_iva) VALUES(?,?,?,?,?,?,?,?,?)`,
-            [nombre, apellido, cuit, razon_social, direccion, telefono, email, dni, condicion_iva]
-        );
+        const [resultado]= await ClientesModel.crear({ nombre, apellido, cuit, razon_social, direccion, telefono, email, dni, condicion_iva });
             res.status(201).json({
                 mensaje:'Cliente creado con éxito',
                 id:resultado.insertId  //mandar el ID
@@ -34,7 +32,7 @@ class ClientesController {
     async consultarDetalle(req, res) {
         const { id } = req.params;
 
-        const [filas] = await db.query('SELECT * FROM clientes WHERE id = ?', [id]);
+        const [filas] = await ClientesModel.obtenerPorId(id);
 
         if (filas.length === 0) {
                 return res.status(404).json({ error: 'Cliente no encontrado' });
@@ -52,16 +50,13 @@ class ClientesController {
                 return res.status(400).json({error: 'faltan campos obligatorios'});
             }
 
-            const [resultado] = await db.query(
-                `UPDATE clientes SET nombre = ?, apellido = ?, cuit = ?, razon_social = ?, direccion = ?, telefono = ?, email = ?, dni = ?, condicion_iva = ? WHERE id = ?`,
-                [nombre, apellido, cuit, razon_social, direccion, telefono, email, dni, condicion_iva, id]
-            );
+            const [resultado] = await ClientesModel.actualizar(id, { nombre, apellido, cuit, razon_social, direccion, telefono, email, dni, condicion_iva });
 
             if (resultado.affectedRows === 0) {
                 return res.status(404).json({ error: 'Cliente no encontrado' });
             }
 
-            const [filas] = await db.query('SELECT * FROM clientes WHERE id = ?', [id]);
+            const [filas] = await ClientesModel.obtenerPorId(id);
 
             res.status(200).json({
                 mensaje: 'Cliente actualizado con éxito',
@@ -70,7 +65,7 @@ class ClientesController {
            
     }
 //PATCH
-    async actualizarCampos(req, res) {
+    async actualizarParcial(req, res) {
         const { id } = req.params;
         const campos = req.body;
         
@@ -90,16 +85,13 @@ class ClientesController {
         values.push(id); // Agregamos el id al final de los valores del array para la cláusula WHERE
 
         //`UPDATE 
-        const [resultado] = await db.query(
-            `UPDATE clientes SET ${setClause} WHERE id = ?`, 
-            values
-            );
+        const [resultado] = await ClientesModel.actualizarParcial(id, campos);
 
         if (resultado.affectedRows === 0) {
             return res.status(404).json({ error: 'Cliente no encontrado' });
         }
 
-        const [filas] = await db.query('SELECT * FROM clientes WHERE id = ?', [id]);
+        const [filas] = await ClientesModel.obtenerPorId(id);
            
             res.status(200).json({
                 mensaje: 'Cliente actualizado con éxito',
@@ -110,9 +102,7 @@ class ClientesController {
     async eliminar(req, res) {
         const { id } = req.params;
 
-        const [resultado] = await db.query(
-            'DELETE FROM clientes WHERE id = ?', 
-            [id]);
+        const [resultado] = await ClientesModel.eliminar(id);
 
         if (resultado.affectedRows === 0) {
             return res.status(404).json({ error: 'Cliente no encontrado' });
@@ -122,4 +112,5 @@ class ClientesController {
     }
 
 }
+
 export default new ClientesController();
