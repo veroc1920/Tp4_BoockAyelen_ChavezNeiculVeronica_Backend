@@ -8,6 +8,12 @@ router.get('/', empleadosControllers.consultar)
 //Método POST
 router.post('/', empleadosControllers.ingresar) 
 
+//GET empleados por puesto
+router.get('/puesto/:puesto', empleadosControllers.consultarPorPuesto)
+
+//GET estadísticas
+router.get('/estadisticas', empleadosControllers.estadisticas)
+
 //Métodos con /:id 
 router.route('/:id')
  .put(empleadosControllers.actualizar)  //Método  PUT

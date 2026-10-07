@@ -13,6 +13,19 @@ class CategoriasController {
             });
        
     }
+
+//GET categorías por nombre
+    async buscar(req, res) {
+        const [filas] = await CategoriasModel.buscarPorNombre(req.params.texto);
+        res.status(200).json({ total: filas.length, categorias: filas });
+    }
+
+    //GET estadísticas: unidades vendidas por categoría
+    async estadisticas(req, res) {
+        const [filas] = await CategoriasModel.obtenerEstadisticas();
+        res.status(200).json({ estadisticas: filas });
+    }
+
 //POST
     async ingresar(req, res) {
         const {nombre, descripcion } = req.body;

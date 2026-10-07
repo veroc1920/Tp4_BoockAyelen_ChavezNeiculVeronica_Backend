@@ -8,6 +8,12 @@ router.get('/',productosControllers.consultar)
 //Método POST
 router.post('/',productosControllers.ingresar) 
 
+//GET productos por categoría
+router.get('/categoria/:id', productosControllers.consultarPorCategoria)
+
+//GET estadísticas
+router.get('/estadisticas', productosControllers.estadisticas)
+
 //Métodos con /:id 
 router.route('/:id')
  .put(productosControllers.actualizar)  //Método  PUT

@@ -8,6 +8,12 @@ router.get('/', ProveedoresController.consultar)
 //Método POST
 router.post('/', ProveedoresController.ingresar) 
 
+//GET proveedores por condición de IVA
+router.get('/condicion/:condicion', ProveedoresController.consultarPorCondicion)
+
+//GET estadísticas
+router.get('/estadisticas', ProveedoresController.estadisticas)
+
 //Métodos con /:id 
 router.route('/:id')
  .put(ProveedoresController.actualizar)  //Método  PUT

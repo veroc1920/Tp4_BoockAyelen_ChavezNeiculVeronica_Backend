@@ -23,6 +23,22 @@ class PedidosModel {
             );
     }
 
+        // Filtro para obtener pedidos por estado
+    async obtenerPorEstado(estado) {
+        return await db.query('SELECT * FROM pedidos WHERE estado = ?', [estado]);
+    }
+
+    // Agregación para obtener estadísticas de pedidos por mes
+    async obtenerEstadisticas() {
+        return await db.query(`
+            SELECT DATE_FORMAT(fecha, '%Y-%m') AS mes,
+                   COUNT(*) AS cantidad_pedidos,
+                   SUM(total) AS total_facturado
+            FROM pedidos
+            GROUP BY mes
+        `);
+    }
+
     async obtenerPorId(id) {
         return await db.query(`
             SELECT p.*,
@@ -63,19 +79,24 @@ class PedidosModel {
                 [id]);
      }
     async actualizarParcial(id, campos) { 
-        const keys = Object.keys(campos);
-            console.log(`Keys: ${keys}`);
+        const permitidos = ['id_cliente', 'id_empleado', 'id_compania', 'total', 'estado'];
+        const keys = Object.keys(campos).filter(key => permitidos.includes(key));
 
+        if (keys.length === 0) {
+            const error = new Error('No se proporcionaron campos válidos para actualizar'); 
+            error.status = 400;
+            throw error;
+        }
 
-            const setClause = keys.map(key => `${key} = ?`).join(', ');
+        const setClause = keys.map(key => `${key} = ?`).join(', ');
             
-            const values = keys.map(key => campos[key]);
-            values.push(id); 
+        const values = keys.map(key => campos[key]);
+        values.push(id); 
 
-            return await db.query(
-                `UPDATE pedidos SET ${setClause} WHERE id_pedido = ?`, 
-                values
-            );
+        return await db.query(
+            `UPDATE pedidos SET ${setClause} WHERE id_pedido = ?`, 
+            values
+        );
      }
 }
 

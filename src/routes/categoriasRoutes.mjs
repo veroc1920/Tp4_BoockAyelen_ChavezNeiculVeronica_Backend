@@ -9,6 +9,11 @@ router.get('/', categoriasControllers.consultar)
 //Método POST
 router.post('/', categoriasControllers.ingresar) 
 
+//GET categorías por nombre
+router.get('/buscar/:texto', categoriasControllers.buscar)
+//GET estadísticas
+router.get('/estadisticas', categoriasControllers.estadisticas)
+
 //Métodos con /:id 
 router.route('/:id')
  .put(categoriasControllers.actualizar)  //Método  PUT

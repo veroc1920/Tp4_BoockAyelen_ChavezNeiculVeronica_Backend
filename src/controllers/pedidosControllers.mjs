@@ -29,6 +29,17 @@ class PedidosController {
         
     }
     
+// GET estado
+        async consultarPorEstado(req, res) {
+        const [filas] = await PedidosModel.obtenerPorEstado(req.params.estado);
+        res.status(200).json({ total: filas.length, pedidos: filas });
+    }
+
+//GET estadisticas
+    async estadisticas(req, res) {
+        const [filas] = await PedidosModel.obtenerEstadisticas();
+        res.status(200).json({ estadisticas: filas });
+    }
 
  //GET id
     async consultarDetalle(req, res) {

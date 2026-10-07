@@ -19,6 +19,24 @@ class ProductosModel {
             );
     }
 
+    // Filtrar productos por categoría
+    async obtenerPorCategoria(idCategoria) {
+        return await db.query('SELECT * FROM productos WHERE id_categoria = ?', [idCategoria]);
+    }
+
+    // Estadísticas de productos por categoría
+    async obtenerEstadisticas() {
+        return await db.query(`
+            SELECT c.nombre AS categoria,
+                   COUNT(pr.id_producto) AS cantidad_productos,
+                   ROUND(AVG(pr.precio), 2) AS precio_promedio,
+                   SUM(pr.stock) AS stock_total
+            FROM categorias c
+            LEFT JOIN productos pr ON pr.id_categoria = c.id_categoria
+            GROUP BY c.id_categoria, c.nombre
+        `);
+    }
+
     async obtenerPorId(id) {
         return await db.query(`
             SELECT pr.*,
@@ -43,19 +61,24 @@ class ProductosModel {
                 [id]);
      }
     async actualizarParcial(id, campos) { 
-        const keys = Object.keys(campos);
-            console.log(`Keys: ${keys}`);
+        const permitidos = ['id_categoria', 'id_proveedor', 'nombre_producto', 'descripcion', 'precio', 'stock'];
+        const keys = Object.keys(campos).filter(key => permitidos.includes(key));
 
+        if (keys.length === 0) {
+            const error = new Error('No se proporcionaron campos válidos para actualizar'); 
+            error.status = 400;
+            throw error;
+        }
 
-            const setClause = keys.map(key => `${key} = ?`).join(', ');
+        const setClause = keys.map(key => `${key} = ?`).join(', ');
             
-            const values = keys.map(key => campos[key]);
-            values.push(id); 
+        const values = keys.map(key => campos[key]);
+        values.push(id); 
 
-            return await db.query(
-                `UPDATE productos SET ${setClause} WHERE id_producto = ?`, 
-                values
-            );
+        return await db.query(
+            `UPDATE productos SET ${setClause} WHERE id_producto = ?`, 
+            values
+        );
      }
 }
 

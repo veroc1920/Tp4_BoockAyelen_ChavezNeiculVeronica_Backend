@@ -14,6 +14,18 @@ class ClientesController {
        
     }
 
+    //GET clientes filtrados por condición de IVA
+    async consultarPorCondicion(req, res) {
+        const [filas] = await ClientesModel.obtenerPorCondicion(req.params.condicion);
+        res.status(200).json({ total: filas.length, clientes: filas });
+    }
+
+    //GET estadísticas: pedidos y total comprado por cliente
+    async estadisticas(req, res) {
+        const [filas] = await ClientesModel.obtenerEstadisticas();
+        res.status(200).json({ estadisticas: filas });
+    }
+
     //POST
     async ingresar(req,res){
         const {nombre, apellido, cuit, razon_social, direccion, telefono, email, dni, condicion_iva} = req.body;

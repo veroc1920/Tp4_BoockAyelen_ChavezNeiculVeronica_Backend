@@ -13,6 +13,19 @@ class ProveedoresController {
             });
        
     }
+
+//GET proveedores filtrados por condición de IVA
+    async consultarPorCondicion(req, res) {
+        const [filas] = await ProveedoresModel.obtenerPorCondicion(req.params.condicion);
+        res.status(200).json({ total: filas.length, proveedores: filas });
+    }
+
+//GET estadísticas: productos y stock por proveedor
+    async estadisticas(req, res) {
+        const [filas] = await ProveedoresModel.obtenerEstadisticas();
+        res.status(200).json({ estadisticas: filas });
+    }
+
 //POST
     async ingresar(req, res) {
         const { razon_social, nombre_contacto, telefono, email, direccion, condicion_iva } = req.body;

@@ -12,6 +12,18 @@ class EmpleadosController {
             });    
     }
 
+    //GET empleados filtrados por puesto
+    async consultarPorPuesto(req, res) {
+        const [filas] = await empleadosModel.obtenerPorPuesto(req.params.puesto);
+        res.status(200).json({ total: filas.length, empleados: filas });
+    }
+
+    //GET estadísticas: pedidos y total vendido por empleado
+    async estadisticas(req, res) {
+        const [filas] = await empleadosModel.obtenerEstadisticas();
+        res.status(200).json({ estadisticas: filas });
+    }
+
 //POST
     async ingresar(req,res){
         const {nombre, apellido, fecha_de_nac, fecha_de_ingreso, dni, cuil, email, puesto} = req.body;

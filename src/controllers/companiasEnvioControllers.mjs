@@ -9,8 +9,19 @@ class CompaniasEnvioController {
         res.status(200).json({
             total: filas.length,
             companias: filas
-        });
-       
+        });  
+    }
+
+    //GET compañías por nombre
+    async buscar(req, res) {
+        const [filas] = await CompaniasEnvioModel.buscarPorNombre(req.params.texto);
+        res.status(200).json({ total: filas.length, companias: filas });
+    }
+
+    //GET envíos por compañía
+    async estadisticas(req, res) {
+        const [filas] = await CompaniasEnvioModel.obtenerEstadisticas();
+        res.status(200).json({ estadisticas: filas });
     }
 
     //POST

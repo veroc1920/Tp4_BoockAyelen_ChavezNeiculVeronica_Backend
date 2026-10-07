@@ -9,6 +9,12 @@ router.get('/', clientesControllers.consultar)
 //Método POST
 router.post('/', clientesControllers.ingresar) 
 
+//GET clientes por condición de IVA
+router.get('/condicion/:condicion', clientesControllers.consultarPorCondicion)
+
+//GET estadísticas
+router.get('/estadisticas', clientesControllers.estadisticas)
+
 //Métodos con /:id 
 router.route('/:id')
  .put(clientesControllers.actualizar)  //Método  PUT

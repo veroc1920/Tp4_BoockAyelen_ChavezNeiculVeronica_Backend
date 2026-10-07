@@ -9,6 +9,12 @@ router.get('/', companiasEnvioControllers.consultar)
 //Método POST
 router.post('/', companiasEnvioControllers.ingresar) 
 
+//GET compañías por nombre
+router.get('/buscar/:texto', companiasEnvioControllers.buscar)
+
+//GET estadísticas
+router.get('/estadisticas', companiasEnvioControllers.estadisticas)
+
 //Métodos con /:id 
 router.route('/:id')
  .put(companiasEnvioControllers.actualizar)  //Método  PUT

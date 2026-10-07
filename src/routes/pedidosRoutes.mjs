@@ -7,7 +7,13 @@ const router = express.Router();
 //Métodos GET
 router.get('/', pedidosControllers.consultar)
 //Método POST
-router.post('/', pedidosControllers.ingresar) 
+router.post('/', pedidosControllers.ingresar)
+
+//Métodos GET por estado
+router.get('/estado/:estado', pedidosControllers.consultarPorEstado)
+
+//Métodos GET estadisticas
+router.get('/estadisticas', pedidosControllers.estadisticas)
 
 //Métodos con /:id 
 router.route('/:id')

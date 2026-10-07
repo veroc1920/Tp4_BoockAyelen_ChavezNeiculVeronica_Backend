@@ -7,12 +7,24 @@ class ProductosController {
     async consultar(req, res) {
         const [filas] = await productosModel.obtenerTodos();
 
-            res.status(200).json({
-                total: filas.length,
-                productos: filas
-            });
-       
+        res.status(200).json({
+            total: filas.length,
+            productos: filas
+        });
     }
+
+//GET productos filtrados por categoría
+    async consultarPorCategoria(req, res) {
+        const [filas] = await productosModel.obtenerPorCategoria(req.params.id);
+        res.status(200).json({ total: filas.length, productos: filas });
+    }
+
+//GET estadísticas por categoría
+    async estadisticas(req, res) {
+        const [filas] = await productosModel.obtenerEstadisticas();
+        res.status(200).json({ estadisticas: filas });
+    }
+
 //POST
     async ingresar(req, res) {
         const { id_categoria, id_proveedor, nombre_producto, descripcion, precio, stock  } = req.body;
